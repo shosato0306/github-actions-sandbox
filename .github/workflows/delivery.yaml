@@ -7,6 +7,7 @@ on:
 
 env:
   GCP_PROJECT: pulumi-demo-2021
+  GCP_SA_KEY: ${{ secrets.SA_KEY }}
 
 jobs:
   test:
@@ -39,19 +40,19 @@ jobs:
           with:
             version: '290.0.1'
             project_id: ${{ env.GCP_PROJECT }}
-            service_account_key: ${{ secrets.SA_KEY }}
+            service_account_key: ${{ env.GCP_SA_KEY }}
             export_default_credentials: true
         - name: Configure Docker
           run: gcloud auth configure-docker
         - name: Build
-          run: docker build -t gcr.io/${{ secrets.GCP_PROJECT }}/helloworld:latest .
+          run: docker build -t gcr.io/${{ env.GCP_PROJECT }}/helloworld:latest .
         - name: Push
-          run: docker push gcr.io/${{ secrets.GCP_PROJECT }}/helloworld:latest
+          run: docker push gcr.io/${{ env.GCP_PROJECT }}/helloworld:latest
         - name: Deploy
           run: |
             gcloud run deploy helloworld \
             --region asia-northeast1 \
-            --image gcr.io/${{ secrets.GCP_PROJECT }}/helloworld \
+            --image gcr.io/${{ env.GCP_PROJECT }}/helloworld \
             --platform managed \
             --allow-unauthenticated \
-            --project ${{ secrets.GCP_PROJECT }}
+            --project ${{ env.GCP_PROJECT }}
