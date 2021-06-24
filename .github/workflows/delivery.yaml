@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+
+env:
+  GCP_PROJECT: pulumi-demo-2021
+
 jobs:
   test:
     name: Test
@@ -26,14 +30,15 @@ jobs:
       - name: Interact with gotestsum
         run: gotestsum --format short-verbose
 
-  delivery:
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
         - uses: actions/checkout@v2
         - uses: google-github-actions/setup-gcloud@master
           with:
             version: '290.0.1'
-            project_id: ${{ secrets.GCP_PROJECT }}
+            project_id: ${ GCP_PROJECT }
             service_account_key: ${{ secrets.SA_KEY }}
             export_default_credentials: true
         - name: Configure Docker
